@@ -1,56 +1,36 @@
 import React from 'react'
 import CardImg from '../assets/cardimg.jpg'
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useEffect } from 'react'
 import "swiper/css";
 
-const CardList = () => {
-    const data = [
-        {
-            id: 1,
-            title: "card 1",
-            description: "this is card 1",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 2,
-            title: "card 2",
-            description: "this is card 2",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 4,
-            title: "card 4",
-            description: "this is card 4",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 5,
-            title: "card 5",
-            description: "this is card 5",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 6,
-            title: "card 6",
-            description: "this is card 6",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 7,
-            title: "card 7",
-            description: "this is card 7",
-            image: "https://picsum.photos/200/300"
-        },{
-            id: 8,
-            title: "card 8",
-            description: "this is card 8",
-            image: "https://picsum.photos/200/300"
+const CardList = ({ title, category }) => {
+    const [data, setData] = React.useState([]);
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZDQ1ZGJmN2I0MzY4MWNiZGVjNzg5ODZiOGRkNGFlNCIsIm5iZiI6MTc4Mzg1MzkxOS4yMTYsInN1YiI6IjZhNTM3MzVmYzRjYjhlYjVhYTNhNzU4MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.znHs-e0oNA3VFNSVmBu6uzmBdW6JBauQfED46DlD4po'
         }
-    ];
+    };
 
+    useEffect(() => {
+        fetch(`https://api.themoviedb.org/3/movie/${category}?language=en-US&page=1`, options)
+            .then(res => res.json())
+            .then(res => setData(res.results))
+            .catch(err => console.error(err));
+    }, [category])
+
+
+console.log(data);
     return (
         <div className="text-white md:px-4">
-            <h2 className="pt-10 pb-5 text-lg font-medium">Upcoming</h2>
+            <h2 className="pt-10 pb-5 text-lg font-medium">{title}</h2>
             <Swiper slidesPerView={"auto"} spaceBetween={10} className="mySwiper">
                 {data.map((item, index) => (
                     <SwiperSlide key={index} className="max-w-72">
-                        <img src={CardImg} alt="" className="h-44 w-full object-center object-cove" />
-                        <p className="text-center pt-2">A very good movie</p>
+                        <img src={`https://image.tmdb.org/t/p/w500${item.backdrop_path}`} alt="" className="h-44 w-full object-center object-cover" />
+                        <p className="text-center pt-2">{item.original_title}</p>
                     </SwiperSlide>
                 ))}
             </Swiper>
