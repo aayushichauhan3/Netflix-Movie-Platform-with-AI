@@ -10,7 +10,7 @@ const Hero = () => {
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZDQ1ZGJmN2I0MzY4MWNiZGVjNzg5ODZiOGRkNGFlNCIsIm5iZiI6MTc4Mzg1MzkxOS4yMTYsInN1YiI6IjZhNTM3MzVmYzRjYjhlYjVhYTNhNzU4MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.znHs-e0oNA3VFNSVmBu6uzmBdW6JBauQfED46DlD4po'
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`
     }
   };
 
