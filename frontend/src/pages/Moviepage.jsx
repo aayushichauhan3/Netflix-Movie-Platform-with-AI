@@ -2,9 +2,12 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Play } from 'lucide-react'
+import { Link } from 'react-router-dom'
 const Moviepage = () => {
     const { id } = useParams();
     const [movie, setMovie] = React.useState(null);
+    const [recommendations, setRecommendations] = React.useState([]);
+    const [trailerKey, setTrailerKey] = React.useState(null);
     const options = {
         method: 'GET',
         headers: {
@@ -13,10 +16,25 @@ const Moviepage = () => {
         }
     };
 
+
+
     useEffect(() => {
         fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US`, options)
             .then(res => res.json())
             .then(res => setMovie(res))
+            .catch(err => console.error(err));
+
+        fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1`, options)
+            .then(res => res.json())
+            .then(res => setRecommendations(res.results || []))
+            .catch(err => console.error(err));
+
+        fetch(`https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`, options)
+            .then(res => res.json())
+            .then(res => {
+                const trailer = res.results?.find((vid) => vid.site === "YouTube" && vid.type === "Trailer");
+                setTrailerKey(trailer?.key || null);
+            })
             .catch(err => console.error(err));
     }, [id]);
     if (!movie) {
@@ -27,7 +45,7 @@ const Moviepage = () => {
 
         )
     }
-    console.log(movie)
+
     return (
         <div className="min-h-screen bg-[#181818] text-white">
             <div className="relative h-[60vh] flex item-end" style={{
@@ -51,15 +69,18 @@ const Moviepage = () => {
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {movie.genres.map((genre) => (
-                                <span className="bg-gray-800 px-3 py-1 rounded-full text-sm">
+                                <span key={genre.id} className="bg-gray-800 px-3 py-1 rounded-full text-sm">
                                     {genre.name}
                                 </span>
                             ))}
                         </div>
                         <p className="max-w-2xl text-gray-200">{movie.overview}</p>
-                        <button className="flex justify-center items-center bg-[#e50914] hover:bg-[#f40612] text-white py-3 px-4 rounded-full cursor-pointer text-sm md:text-base mt-2 md:mt-4">
-                            <Play className="mr-2 w-4 h-5 md:w-5 md:h-5" />Watch now
-                        </button>
+                        <Link to={`https://www.youtube.com/watch?v=${trailerKey}`} target="_blank">
+                            <button className="flex justify-center items-center bg-[#e50914] hover:bg-[#f40612] text-white py-3 px-4 rounded-full cursor-pointer text-sm md:text-base mt-2 md:mt-4">
+                                <Play className="mr-2 w-4 h-5 md:w-5 md:h-5" />Watch now
+                            </button>
+                        </Link>
+
                     </div>
                 </div>
             </div>
@@ -110,15 +131,42 @@ const Moviepage = () => {
 
                         </ul>
                     </div>
-                    <div className="flex-1"> 
+                    <div className="flex-1">
                         <h3 className="font-semibold text-white mb-2">Tagline</h3>
-                        <p className ="italic text-gray-400 mb-6">{movie.tagline || "No tagline available."}</p>
+                        <p className="italic text-gray-400 mb-6">{movie.tagline || "No tagline available."}</p>
 
                         <h3 className="font-semibold text-white mb-2">Overview</h3>
                         <p className="text-gray-200">{movie.overview}</p>
                     </div>
                 </div>
             </div>
+
+            {recommendations.length > 0 && (
+                <div className="p-8">
+                    <h2 className="text-2xl font-semibold mb-4">
+                        You might also like...
+                    </h2>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        {recommendations.slice(0, 10).map((rec) => (
+                            <div key={rec.id} className="bg-[#232323] rounded-lg overflow-hidden hover:scale-105 transition">
+                                <Link to={`/movie/${rec.id}`}>
+                                    <img
+                                        src={`https://image.tmdb.org/t/p/w300${rec.poster_path}`} alt={rec.title}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                    <div>
+                                        <h3 className="text-sm font-semibold">{rec.title}</h3>
+                                        <span className="text-gray-400 text-xs">
+                                            {rec.release_date?.slice(0, 4)}
+                                        </span>
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
