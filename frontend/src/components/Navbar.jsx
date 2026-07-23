@@ -27,7 +27,11 @@ export const Navbar = () => {
           <Search className="absolute right-4 top-2 w-5 h-5" />
         </div>
         <button className="bg-[#e50914] text-white px-5 py-2 cursor-pointer hover:bg-[#f40612]">Get AI Movie Picks</button>
-        <button className="border border-[#333] py-2 px-4 cursor-pointer hover:bg-[#444]">Sign in</button>
+
+        <Link to={"/signin"}>
+          <button className="border border-[#333] py-2 px-4 cursor-pointer hover:bg-[#444]">Sign in</button>
+        </Link>
+
       </div>
     </nav>
   )
