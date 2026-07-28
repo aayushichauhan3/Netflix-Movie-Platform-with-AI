@@ -140,6 +140,13 @@ app.get("/api/fetch-user", async (req, res) => {
     }
 });
 
+// log out
+app.post("/api/logout", async (req, res) => {
+    res.clearCookie("token");
+    res.status(200).json({message: "Logged out succesfully"});
+})
+
+
 app.listen(PORT, () => {
     connectToDB();
     console.log(`Server is runing on http://localhost:${PORT}`)
