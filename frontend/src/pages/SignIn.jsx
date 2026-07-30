@@ -1,10 +1,25 @@
 import React from 'react'
 import { Navigate, useNavigate } from "react-router-dom"
 import { useState } from 'react';
+import { userAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
 const SignIn = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { login, isLoading, error } = userAuthStore();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { message } = await login(username, password);
+      toast.success(message);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div
@@ -14,7 +29,7 @@ const SignIn = () => {
       }}>
       <div className="max-w-[450px] w-full bg-black bg-opacity-75 rounded px-8 py-14 mx-auto mt-8">
         <h1 className="text-3xl font-medium text-white mb-7">Sign In</h1>
-        <form action="" className="flex flex-col space-y-4">
+        <form onSubmit={handleLogin} className="flex flex-col space-y-4">
           <input
             type='text'
             value={username}
@@ -29,8 +44,10 @@ const SignIn = () => {
             placeholder="Password"
             className="w-full h-[50px] bg-[#333] text-white rounded px-5 text-base" />
 
+          {error && <p className='text-red-500'>{error}</p>}
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-[#e50914] text-white py-2 rounded text-base hover:opacity-90 cursor-pointer">
             Sign In
           </button>
